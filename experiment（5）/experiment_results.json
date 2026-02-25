@@ -1,0 +1,2396 @@
+{
+  "experiment_time": "2026-02-25T16:43:13.916810",
+  "config": {
+    "main_model": "claude-sonnet-4-20250514",
+    "worker_model": "claude-sonnet-4-20250514"
+  },
+  "records": [
+    {
+      "test_case_id": "rotation_001",
+      "architecture": "A",
+      "scenario": "rotation_missing_selection",
+      "run_index": 1,
+      "timestamp": "2026-02-25T16:39:23.786591",
+      "metrics": {
+        "total_turns": 7,
+        "tool_calls": 6,
+        "error_count": 1,
+        "skills_calls": 1,
+        "recovery_attempts": 1,
+        "recovery_successes": 1,
+        "input_tokens": 41988,
+        "output_tokens": 2199,
+        "elapsed_time": 38.22430920600891
+      },
+      "task_history": [
+        {
+          "step": 1,
+          "tool": "factor_mapping",
+          "params": {
+            "query": "市盈率PE"
+          },
+          "result": {
+            "success": true,
+            "message": "因子映射完成",
+            "data": {
+              "factors": [
+                {
+                  "name": "市盈率",
+                  "code": "pe_ttm",
+                  "unit": "倍"
+                },
+                {
+                  "name": "市净率",
+                  "code": "pb",
+                  "unit": "倍"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 2,
+          "tool": "exchange_mapping",
+          "params": {
+            "query": "美股"
+          },
+          "result": {
+            "success": true,
+            "message": "交易所映射完成",
+            "data": {
+              "exchange_code": "NAS",
+              "exchange_name": "纳斯达克"
+            }
+          }
+        },
+        {
+          "step": 3,
+          "tool": "factor_selection",
+          "params": {
+            "trading_model": "轮动交易",
+            "asset_type": "股票",
+            "strategy_style": "价值投资",
+            "user_specified_factors": [
+              "pe_ttm"
+            ]
+          },
+          "result": {
+            "success": true,
+            "message": "因子选择完成",
+            "data": {
+              "core_stock_factors": [
+                {
+                  "code": "pb",
+                  "name": "市净率"
+                }
+              ],
+              "core_timing_factors": [
+                {
+                  "code": "rsi_14",
+                  "name": "RSI14"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 4,
+          "tool": "rotation_trading_backtest_service",
+          "params": {
+            "arg0": {
+              "backtestParams": {
+                "commissionType": "percent",
+                "commission": 0.001,
+                "startDate": "2021-01-01",
+                "endDate": "2024-01-01",
+                "initialCapital": 1000000,
+                "benchmark": "SPY",
+                "adjustmentType": "forward",
+                "slippage": 0.0005
+              },
+              "stockSelection": {
+                "exchanges": [
+                  "NAS",
+                  "NYS"
+                ],
+                "rankingFactor": "pe_ttm",
+                "rankingOrder": "ASC"
+              },
+              "timingRules": {
+                "triggerSchedule": {
+                  "frequency": "monthly",
+                  "every": 1
+                },
+                "buyConditions": [
+                  {
+                    "factor": "RANK_AFTER_SORT",
+                    "condition": {
+                      "conditionType": "CLOSE_CLOSE",
+                      "conditionValue": "<= 10"
+                    }
+                  }
+                ],
+                "sellConditions": [
+                  {
+                    "factor": "RANK_AFTER_SORT",
+                    "condition": {
+                      "conditionType": "CLOSE_CLOSE",
+                      "conditionValue": "> 10"
+                    }
+                  }
+                ],
+                "positionLimits": {
+                  "perSecurityWeight": 0.1,
+                  "maxPositionWeight": 0.15,
+                  "rebalanceTargetWeight": 0.1
+                }
+              },
+              "targetFinanceTypeList": [
+                "STOCK"
+              ],
+              "industryList": []
+            }
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Missing required field 'stockSelection.selectionConditions'. selectionConditions should be an array of objects with 'factor' (string) and optional 'condition'."
+          }
+        },
+        {
+          "step": 5,
+          "tool": "rotation_trading_backtest_service",
+          "params": {
+            "arg0": {
+              "backtestParams": {
+                "commissionType": "percent",
+                "commission": 0.001,
+                "startDate": "2021-01-01",
+                "endDate": "2024-01-01",
+                "initialCapital": 1000000,
+                "benchmark": "SPY",
+                "adjustmentType": "forward",
+                "slippage": 0.0005
+              },
+              "stockSelection": {
+                "exchanges": [
+                  "NAS",
+                  "NYS"
+                ],
+                "rankingFactor": "pe_ttm",
+                "rankingOrder": "ASC",
+                "selectionConditions": [
+                  {
+                    "factor": "pe_ttm",
+                    "condition": {
+                      "conditionType": "CLOSE_CLOSE",
+                      "conditionValue": "> 0"
+                    }
+                  }
+                ]
+              },
+              "timingRules": {
+                "triggerSchedule": {
+                  "frequency": "monthly",
+                  "every": 1
+                },
+                "buyConditions": [
+                  {
+                    "factor": "RANK_AFTER_SORT",
+                    "condition": {
+                      "conditionType": "CLOSE_CLOSE",
+                      "conditionValue": "<= 10"
+                    }
+                  }
+                ],
+                "sellConditions": [
+                  {
+                    "factor": "RANK_AFTER_SORT",
+                    "condition": {
+                      "conditionType": "CLOSE_CLOSE",
+                      "conditionValue": "> 10"
+                    }
+                  }
+                ],
+                "positionLimits": {
+                  "perSecurityWeight": 0.1,
+                  "maxPositionWeight": 0.15,
+                  "rebalanceTargetWeight": 0.1
+                }
+              },
+              "targetFinanceTypeList": [
+                "STOCK"
+              ],
+              "industryList": []
+            }
+          },
+          "result": {
+            "success": true,
+            "message": "轮动交易模型回测完成",
+            "data": {
+              "backtest_results": {
+                "total_return": 0.256,
+                "sharpe_ratio": 1.45,
+                "max_drawdown": -0.15
+              },
+              "image_component": {
+                "image_id": "rotation_001"
+              }
+            }
+          }
+        }
+      ],
+      "final_response_length": 373,
+      "injection_log": [
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "call_number": 1,
+          "phase": "inject",
+          "rule_key": "rotation_missing_selectionConditions",
+          "field_path": "arg0.stockSelection.selectionConditions",
+          "error_message": "Missing required field 'stockSelection.selectionConditions'. selectionConditions should be an array of objects with 'factor' (string) and optional 'condition'."
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "call_number": 2,
+          "phase": "validate",
+          "passed": true,
+          "forced_pass": false,
+          "failed_fields": [],
+          "checks": [
+            {
+              "field": "arg0.stockSelection.rankingFactor",
+              "valid": true
+            },
+            {
+              "field": "arg0.stockSelection.rankingOrder",
+              "valid": true
+            },
+            {
+              "field": "arg0.stockSelection.selectionConditions",
+              "valid": true
+            },
+            {
+              "field": "arg0.timingRules.buyConditions",
+              "valid": true
+            },
+            {
+              "field": "arg0.timingRules.sellConditions",
+              "valid": true
+            },
+            {
+              "field": "arg0.targetFinanceTypeList",
+              "valid": true
+            }
+          ]
+        }
+      ],
+      "executor_log": [
+        {
+          "tool_name": "factor_mapping",
+          "original_params": "{\"query\": \"市盈率PE\"}",
+          "actual_params": "{\"query\": \"市盈率PE\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "exchange_mapping",
+          "original_params": "{\"query\": \"美股\"}",
+          "actual_params": "{\"query\": \"美股\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "factor_selection",
+          "original_params": "{\"trading_model\": \"轮动交易\", \"asset_type\": \"股票\", \"strategy_style\": \"价值投资\", \"user_specified_factors\": [\"pe_ttm\"]}",
+          "actual_params": "{\"trading_model\": \"轮动交易\", \"asset_type\": \"股票\", \"strategy_style\": \"价值投资\", \"user_specified_factors\": [\"pe_ttm\"]}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "original_params": "{\"arg0\": {\"backtestParams\": {\"commissionType\": \"percent\", \"commission\": 0.001, \"startDate\": \"2021-01-01\", \"endDate\": \"2024-01-01\", \"initialCapital\": 1000000, \"benchmark\": \"SPY\", \"adjustmentType\": \"forward\", \"slippage\": 0.0005}, \"stockSelection\": {\"exchanges\": [\"NAS\", \"NYS\"], \"rankingFactor\": \"pe_ttm\", \"rankingOrder\": \"ASC\", \"selectionConditions\": [{\"factor\": \"pe_ttm\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"> 0\"}}]}, \"timingRules\": {\"triggerSchedule\": {\"frequency\": \"monthly\", \"every\": 1}, \"buyConditions\": [{\"factor\": \"RANK_AFTER_SORT\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"<= 10\"}}], \"sellConditions\": [{\"factor\": \"RANK_AFTER_SORT\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"> 10\"}}], \"positionLimits\": {\"perSecurityWeight\": 0.1, \"maxPositionWeight\": 0.15, \"rebalanceTargetWeight\": 0.1}}, \"targetFinanceTypeList\": [\"STOCK\"], \"industryList\": []}}",
+          "actual_params": "{\"arg0\": {\"backtestParams\": {\"commissionType\": \"percent\", \"commission\": 0.001, \"startDate\": \"2021-01-01\", \"endDate\": \"2024-01-01\", \"initialCapital\": 1000000, \"benchmark\": \"SPY\", \"adjustmentType\": \"forward\", \"slippage\": 0.0005}, \"stockSelection\": {\"exchanges\": [\"NAS\", \"NYS\"], \"rankingFactor\": \"pe_ttm\", \"rankingOrder\": \"ASC\"}, \"timingRules\": {\"triggerSchedule\": {\"frequency\": \"monthly\", \"every\": 1}, \"buyConditions\": [{\"factor\": \"RANK_AFTER_SORT\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"<= 10\"}}], \"sellConditions\": [{\"factor\": \"RANK_AFTER_SORT\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"> 10\"}}], \"positionLimits\": {\"perSecurityWeight\": 0.1, \"maxPositionWeight\": 0.15, \"rebalanceTargetWeight\": 0.1}}, \"targetFinanceTypeList\": [\"STOCK\"], \"industryList\": []}}",
+          "result_success": false,
+          "phase": "inject",
+          "blocked": true
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "original_params": "{\"arg0\": {\"backtestParams\": {\"commissionType\": \"percent\", \"commission\": 0.001, \"startDate\": \"2021-01-01\", \"endDate\": \"2024-01-01\", \"initialCapital\": 1000000, \"benchmark\": \"SPY\", \"adjustmentType\": \"forward\", \"slippage\": 0.0005}, \"stockSelection\": {\"exchanges\": [\"NAS\", \"NYS\"], \"rankingFactor\": \"pe_ttm\", \"rankingOrder\": \"ASC\", \"selectionConditions\": [{\"factor\": \"pe_ttm\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"> 0\"}}]}, \"timingRules\": {\"triggerSchedule\": {\"frequency\": \"monthly\", \"every\": 1}, \"buyConditions\": [{\"factor\": \"RANK_AFTER_SORT\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"<= 10\"}}], \"sellConditions\": [{\"factor\": \"RANK_AFTER_SORT\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"> 10\"}}], \"positionLimits\": {\"perSecurityWeight\": 0.1, \"maxPositionWeight\": 0.15, \"rebalanceTargetWeight\": 0.1}}, \"targetFinanceTypeList\": [\"STOCK\"], \"industryList\": []}}",
+          "actual_params": "{\"arg0\": {\"backtestParams\": {\"commissionType\": \"percent\", \"commission\": 0.001, \"startDate\": \"2021-01-01\", \"endDate\": \"2024-01-01\", \"initialCapital\": 1000000, \"benchmark\": \"SPY\", \"adjustmentType\": \"forward\", \"slippage\": 0.0005}, \"stockSelection\": {\"exchanges\": [\"NAS\", \"NYS\"], \"rankingFactor\": \"pe_ttm\", \"rankingOrder\": \"ASC\", \"selectionConditions\": [{\"factor\": \"pe_ttm\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"> 0\"}}]}, \"timingRules\": {\"triggerSchedule\": {\"frequency\": \"monthly\", \"every\": 1}, \"buyConditions\": [{\"factor\": \"RANK_AFTER_SORT\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"<= 10\"}}], \"sellConditions\": [{\"factor\": \"RANK_AFTER_SORT\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"> 10\"}}], \"positionLimits\": {\"perSecurityWeight\": 0.1, \"maxPositionWeight\": 0.15, \"rebalanceTargetWeight\": 0.1}}, \"targetFinanceTypeList\": [\"STOCK\"], \"industryList\": []}}",
+          "result_success": true,
+          "phase": "validate",
+          "blocked": false
+        }
+      ],
+      "validation_summary": {
+        "total_injections": 1,
+        "total_validations": 1,
+        "validated_true": 1,
+        "validated_false": 0,
+        "forced_pass": 0,
+        "details": [
+          {
+            "tool_name": "rotation_trading_backtest_service",
+            "call_number": 2,
+            "phase": "validate",
+            "passed": true,
+            "forced_pass": false,
+            "failed_fields": [],
+            "checks": [
+              {
+                "field": "arg0.stockSelection.rankingFactor",
+                "valid": true
+              },
+              {
+                "field": "arg0.stockSelection.rankingOrder",
+                "valid": true
+              },
+              {
+                "field": "arg0.stockSelection.selectionConditions",
+                "valid": true
+              },
+              {
+                "field": "arg0.timingRules.buyConditions",
+                "valid": true
+              },
+              {
+                "field": "arg0.timingRules.sellConditions",
+                "valid": true
+              },
+              {
+                "field": "arg0.targetFinanceTypeList",
+                "valid": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "rotation_001",
+      "architecture": "B",
+      "scenario": "rotation_missing_selection",
+      "run_index": 1,
+      "timestamp": "2026-02-25T16:40:02.012714",
+      "metrics": {
+        "total_turns": 10,
+        "tool_calls": 9,
+        "error_count": 4,
+        "schema_loads": 1,
+        "recovery_attempts": 4,
+        "recovery_successes": 1,
+        "input_tokens": 57248,
+        "output_tokens": 2529,
+        "elapsed_time": 44.95236873626709
+      },
+      "task_history": [
+        {
+          "step": 1,
+          "tool": "factor_mapping",
+          "params": {
+            "query": "市盈率PE"
+          },
+          "result": {
+            "success": true,
+            "message": "因子映射完成",
+            "data": {
+              "factors": [
+                {
+                  "name": "市盈率",
+                  "code": "pe_ttm",
+                  "unit": "倍"
+                },
+                {
+                  "name": "市净率",
+                  "code": "pb",
+                  "unit": "倍"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 2,
+          "tool": "exchange_mapping",
+          "params": {
+            "query": "美股"
+          },
+          "result": {
+            "success": true,
+            "message": "交易所映射完成",
+            "data": {
+              "exchange_code": "NAS",
+              "exchange_name": "纳斯达克"
+            }
+          }
+        },
+        {
+          "step": 3,
+          "tool": "factor_selection",
+          "params": {
+            "trading_model": "轮动交易模型",
+            "asset_type": "美股",
+            "strategy_style": "价值投资",
+            "user_specified_factors": [
+              "pe_ttm"
+            ]
+          },
+          "result": {
+            "success": true,
+            "message": "因子选择完成",
+            "data": {
+              "core_stock_factors": [
+                {
+                  "code": "pb",
+                  "name": "市净率"
+                }
+              ],
+              "core_timing_factors": [
+                {
+                  "code": "rsi_14",
+                  "name": "RSI14"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 4,
+          "tool": "rotation_trading_backtest_service",
+          "params": {
+            "query": "{\n  \"backtestParams\": {\n    \"startDate\": \"2021-01-01\",\n    \"endDate\": \"2024-01-01\",\n    \"commissionType\": \"fixed\",\n    \"commission\": 0.001,\n    \"slippage\": 0.001,\n    \"initialCapital\": 100000\n  },\n  \"stockSelection\": {\n    \"exchanges\": [\"NAS\", \"NYS\"],\n    \"rankingFactor\": \"pe_ttm\",\n    \"rankingOrder\": \"ASC\",\n    \"selectionConditions\": []\n  },\n  \"targetFinanceTypeList\": [\"STOCK\"],\n  \"timingRules\": {\n    \"triggerSchedule\": {\n      \"frequency\": \"monthly\",\n      \"every\": 1\n    },\n    \"buyConditions\": [\n      {\n        \"factor\": \"RANK_AFTER_SORT\",\n        \"condition\": {\n          \"conditionType\": \"CLOSE_CLOSE\",\n          \"conditionValue\": \"<=10\"\n        }\n      }\n    ],\n    \"sellConditions\": [\n      {\n        \"factor\": \"RANK_AFTER_SORT\", \n        \"condition\": {\n          \"conditionType\": \"CLOSE_CLOSE\",\n          \"conditionValue\": \">10\"\n        }\n      }\n    ],\n    \"positionLimits\": {\n      \"perSecurityWeight\": 0.1,\n      \"maxPositionWeight\": 0.15\n    }\n  }\n}"
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Missing required field 'stockSelection.selectionConditions'. selectionConditions should be an array of objects with 'factor' (string) and optional 'condition'."
+          }
+        },
+        {
+          "step": 5,
+          "tool": "rotation_trading_backtest_service",
+          "params": {
+            "query": "{\n  \"backtestParams\": {\n    \"startDate\": \"2021-01-01\",\n    \"endDate\": \"2024-01-01\",\n    \"commissionType\": \"fixed\",\n    \"commission\": 0.001,\n    \"slippage\": 0.001,\n    \"initialCapital\": 100000\n  },\n  \"stockSelection\": {\n    \"exchanges\": [\"NAS\", \"NYS\"],\n    \"rankingFactor\": \"pe_ttm\",\n    \"rankingOrder\": \"ASC\",\n    \"selectionConditions\": [\n      {\n        \"factor\": \"pe_ttm\"\n      }\n    ]\n  },\n  \"targetFinanceTypeList\": [\"STOCK\"],\n  \"timingRules\": {\n    \"triggerSchedule\": {\n      \"frequency\": \"monthly\",\n      \"every\": 1\n    },\n    \"buyConditions\": [\n      {\n        \"factor\": \"RANK_AFTER_SORT\",\n        \"condition\": {\n          \"conditionType\": \"CLOSE_CLOSE\",\n          \"conditionValue\": \"<=10\"\n        }\n      }\n    ],\n    \"sellConditions\": [\n      {\n        \"factor\": \"RANK_AFTER_SORT\", \n        \"condition\": {\n          \"conditionType\": \"CLOSE_CLOSE\",\n          \"conditionValue\": \">10\"\n        }\n      }\n    ],\n    \"positionLimits\": {\n      \"perSecurityWeight\": 0.1,\n      \"maxPositionWeight\": 0.15\n    }\n  }\n}"
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Parameter validation failed with 6 error(s):\n  1. Missing required field '排序因子（stockSelection.rankingFactor）'. Please include 'rankingFactor' in your request.\n  2. Missing required field '排序方向（stockSelection.rankingOrder）'. Please include 'rankingOrder' in your request.\n  3. Missing required field '选股条件（stockSelection.selectionConditions）'. Please include 'selectionConditions' in your request.\n  4. Missing required field '买入条件（timingRules.buyConditions）'. Please include 'buyConditions' in your request.\n  5. Missing required field '卖出条件（timingRules.sellConditions）'. Please include 'sellConditions' in your request.\n  6. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters."
+          }
+        },
+        {
+          "step": 6,
+          "tool": "rotation_trading_backtest_service",
+          "params": {
+            "query": "美股轮动策略回测，参数如下：\n- 回测时间：2021-01-01到2024-01-01\n- 交易所：纳斯达克和纽交所\n- 排序因子：pe_ttm（市盈率）\n- 排序方向：ASC（从低到高）\n- 每月调仓一次\n- 买入条件：排名前10名\n- 卖出条件：排名超过10名时卖出\n- 标的类型：股票\n- 初始资金：100000"
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Parameter validation failed with 6 error(s):\n  1. Missing required field '排序因子（stockSelection.rankingFactor）'. Please include 'rankingFactor' in your request.\n  2. Missing required field '排序方向（stockSelection.rankingOrder）'. Please include 'rankingOrder' in your request.\n  3. Missing required field '选股条件（stockSelection.selectionConditions）'. Please include 'selectionConditions' in your request.\n  4. Missing required field '买入条件（timingRules.buyConditions）'. Please include 'buyConditions' in your request.\n  5. Missing required field '卖出条件（timingRules.sellConditions）'. Please include 'sellConditions' in your request.\n  6. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters."
+          }
+        },
+        {
+          "step": 7,
+          "tool": "rotation_trading_backtest_service",
+          "params": {
+            "query": "构建美股轮动策略，具体要求：\n排序因子：pe_ttm，排序方向：ASC，选股条件：pe_ttm，买入条件：RANK_AFTER_SORT<=10，卖出条件：RANK_AFTER_SORT>10，标的类型：STOCK，交易所：NAS和NYS，每月调仓，回测期间2021-01-01到2024-01-01，初始资金100000"
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Parameter validation failed with 6 error(s):\n  1. Missing required field '排序因子（stockSelection.rankingFactor）'. Please include 'rankingFactor' in your request.\n  2. Missing required field '排序方向（stockSelection.rankingOrder）'. Please include 'rankingOrder' in your request.\n  3. Missing required field '选股条件（stockSelection.selectionConditions）'. Please include 'selectionConditions' in your request.\n  4. Missing required field '买入条件（timingRules.buyConditions）'. Please include 'buyConditions' in your request.\n  5. Missing required field '卖出条件（timingRules.sellConditions）'. Please include 'sellConditions' in your request.\n  6. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters."
+          }
+        },
+        {
+          "step": 8,
+          "tool": "rotation_trading_backtest_service",
+          "params": {
+            "query": "美股轮动策略回测需求：\n排序因子（stockSelection.rankingFactor）：pe_ttm\n排序方向（stockSelection.rankingOrder）：ASC  \n选股条件（stockSelection.selectionConditions）：pe_ttm因子筛选\n买入条件（timingRules.buyConditions）：排名前10位买入\n卖出条件（timingRules.sellConditions）：排名超出前10位卖出\n标的类型（targetFinanceTypeList）：STOCK\n交易所：纳斯达克和纽交所\n调仓频率：每月一次\n回测时间：2021年到2024年\n初始资金：10万美元"
+          },
+          "result": {
+            "success": true,
+            "message": "轮动交易模型回测完成",
+            "data": {
+              "backtest_results": {
+                "total_return": 0.256,
+                "sharpe_ratio": 1.45,
+                "max_drawdown": -0.15
+              },
+              "image_component": {
+                "image_id": "rotation_001"
+              }
+            }
+          }
+        }
+      ],
+      "final_response_length": 513,
+      "injection_log": [
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "call_number": 1,
+          "phase": "inject",
+          "rule_key": "rotation_missing_selectionConditions",
+          "field_path": "arg0.stockSelection.selectionConditions",
+          "error_message": "Missing required field 'stockSelection.selectionConditions'. selectionConditions should be an array of objects with 'factor' (string) and optional 'condition'."
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "call_number": 2,
+          "phase": "validate",
+          "passed": false,
+          "forced_pass": false,
+          "failed_fields": [
+            "arg0.stockSelection.rankingFactor",
+            "arg0.stockSelection.rankingOrder",
+            "arg0.stockSelection.selectionConditions",
+            "arg0.timingRules.buyConditions",
+            "arg0.timingRules.sellConditions",
+            "arg0.targetFinanceTypeList"
+          ],
+          "error_message": "Parameter validation failed with 6 error(s):\n  1. Missing required field '排序因子（stockSelection.rankingFactor）'. Please include 'rankingFactor' in your request.\n  2. Missing required field '排序方向（stockSelection.rankingOrder）'. Please include 'rankingOrder' in your request.\n  3. Missing required field '选股条件（stockSelection.selectionConditions）'. Please include 'selectionConditions' in your request.\n  4. Missing required field '买入条件（timingRules.buyConditions）'. Please include 'buyConditions' in your request.\n  5. Missing required field '卖出条件（timingRules.sellConditions）'. Please include 'sellConditions' in your request.\n  6. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+          "checks": [
+            {
+              "field": "arg0.stockSelection.rankingFactor",
+              "valid": false
+            },
+            {
+              "field": "arg0.stockSelection.rankingOrder",
+              "valid": false
+            },
+            {
+              "field": "arg0.stockSelection.selectionConditions",
+              "valid": false
+            },
+            {
+              "field": "arg0.timingRules.buyConditions",
+              "valid": false
+            },
+            {
+              "field": "arg0.timingRules.sellConditions",
+              "valid": false
+            },
+            {
+              "field": "arg0.targetFinanceTypeList",
+              "valid": false
+            }
+          ]
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "call_number": 3,
+          "phase": "validate",
+          "passed": false,
+          "forced_pass": false,
+          "failed_fields": [
+            "arg0.stockSelection.rankingFactor",
+            "arg0.stockSelection.rankingOrder",
+            "arg0.stockSelection.selectionConditions",
+            "arg0.timingRules.buyConditions",
+            "arg0.timingRules.sellConditions",
+            "arg0.targetFinanceTypeList"
+          ],
+          "error_message": "Parameter validation failed with 6 error(s):\n  1. Missing required field '排序因子（stockSelection.rankingFactor）'. Please include 'rankingFactor' in your request.\n  2. Missing required field '排序方向（stockSelection.rankingOrder）'. Please include 'rankingOrder' in your request.\n  3. Missing required field '选股条件（stockSelection.selectionConditions）'. Please include 'selectionConditions' in your request.\n  4. Missing required field '买入条件（timingRules.buyConditions）'. Please include 'buyConditions' in your request.\n  5. Missing required field '卖出条件（timingRules.sellConditions）'. Please include 'sellConditions' in your request.\n  6. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+          "checks": [
+            {
+              "field": "arg0.stockSelection.rankingFactor",
+              "valid": false
+            },
+            {
+              "field": "arg0.stockSelection.rankingOrder",
+              "valid": false
+            },
+            {
+              "field": "arg0.stockSelection.selectionConditions",
+              "valid": false
+            },
+            {
+              "field": "arg0.timingRules.buyConditions",
+              "valid": false
+            },
+            {
+              "field": "arg0.timingRules.sellConditions",
+              "valid": false
+            },
+            {
+              "field": "arg0.targetFinanceTypeList",
+              "valid": false
+            }
+          ]
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "call_number": 4,
+          "phase": "validate",
+          "passed": false,
+          "forced_pass": false,
+          "failed_fields": [
+            "arg0.stockSelection.rankingFactor",
+            "arg0.stockSelection.rankingOrder",
+            "arg0.stockSelection.selectionConditions",
+            "arg0.timingRules.buyConditions",
+            "arg0.timingRules.sellConditions",
+            "arg0.targetFinanceTypeList"
+          ],
+          "error_message": "Parameter validation failed with 6 error(s):\n  1. Missing required field '排序因子（stockSelection.rankingFactor）'. Please include 'rankingFactor' in your request.\n  2. Missing required field '排序方向（stockSelection.rankingOrder）'. Please include 'rankingOrder' in your request.\n  3. Missing required field '选股条件（stockSelection.selectionConditions）'. Please include 'selectionConditions' in your request.\n  4. Missing required field '买入条件（timingRules.buyConditions）'. Please include 'buyConditions' in your request.\n  5. Missing required field '卖出条件（timingRules.sellConditions）'. Please include 'sellConditions' in your request.\n  6. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+          "checks": [
+            {
+              "field": "arg0.stockSelection.rankingFactor",
+              "valid": false
+            },
+            {
+              "field": "arg0.stockSelection.rankingOrder",
+              "valid": false
+            },
+            {
+              "field": "arg0.stockSelection.selectionConditions",
+              "valid": false
+            },
+            {
+              "field": "arg0.timingRules.buyConditions",
+              "valid": false
+            },
+            {
+              "field": "arg0.timingRules.sellConditions",
+              "valid": false
+            },
+            {
+              "field": "arg0.targetFinanceTypeList",
+              "valid": false
+            }
+          ]
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "call_number": 5,
+          "phase": "validate",
+          "passed": false,
+          "forced_pass": true,
+          "reason": "exceeded max retries (3), forced pass",
+          "failed_fields": []
+        }
+      ],
+      "executor_log": [
+        {
+          "tool_name": "factor_mapping",
+          "original_params": "{\"query\": \"市盈率PE\"}",
+          "actual_params": "{\"query\": \"市盈率PE\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "exchange_mapping",
+          "original_params": "{\"query\": \"美股\"}",
+          "actual_params": "{\"query\": \"美股\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "factor_selection",
+          "original_params": "{\"trading_model\": \"轮动交易模型\", \"asset_type\": \"美股\", \"strategy_style\": \"价值投资\", \"user_specified_factors\": [\"pe_ttm\"]}",
+          "actual_params": "{\"trading_model\": \"轮动交易模型\", \"asset_type\": \"美股\", \"strategy_style\": \"价值投资\", \"user_specified_factors\": [\"pe_ttm\"]}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "original_params": "{\"query\": \"{\\n  \\\"backtestParams\\\": {\\n    \\\"startDate\\\": \\\"2021-01-01\\\",\\n    \\\"endDate\\\": \\\"2024-01-01\\\",\\n    \\\"commissionType\\\": \\\"fixed\\\",\\n    \\\"commission\\\": 0.001,\\n    \\\"slippage\\\": 0.001,\\n    \\\"initialCapital\\\": 100000\\n  },\\n  \\\"stockSelection\\\": {\\n    \\\"exchanges\\\": [\\\"NAS\\\", \\\"NYS\\\"],\\n    \\\"rankingFactor\\\": \\\"pe_ttm\\\",\\n    \\\"rankingOrder\\\": \\\"ASC\\\",\\n    \\\"selectionConditions\\\": []\\n  },\\n  \\\"targetFinanceTypeList\\\": [\\\"STOCK\\\"],\\n  \\\"timingRules\\\": {\\n    \\\"triggerSchedule\\\": {\\n      \\\"frequency\\\": \\\"monthly\\\",\\n      \\\"every\\\": 1\\n    },\\n    \\\"buyConditions\\\": [\\n      {\\n        \\\"factor\\\": \\\"RANK_AFTER_SORT\\\",\\n        \\\"condition\\\": {\\n          \\\"conditionType\\\": \\\"CLOSE_CLOSE\\\",\\n          \\\"conditionValue\\\": \\\"<=10\\\"\\n        }\\n      }\\n    ],\\n    \\\"sellConditions\\\": [\\n      {\\n        \\\"factor\\\": \\\"RANK_AFTER_SORT\\\", \\n        \\\"condition\\\": {\\n          \\\"conditionType\\\": \\\"CLOSE_CLOSE\\\",\\n          \\\"conditionValue\\\": \\\">10\\\"\\n        }\\n      }\\n    ],\\n    \\\"positionLimits\\\": {\\n      \\\"perSecurityWeight\\\": 0.1,\\n      \\\"maxPositionWeight\\\": 0.15\\n    }\\n  }\\n}\"}",
+          "actual_params": "{\"query\": \"{\\n  \\\"backtestParams\\\": {\\n    \\\"startDate\\\": \\\"2021-01-01\\\",\\n    \\\"endDate\\\": \\\"2024-01-01\\\",\\n    \\\"commissionType\\\": \\\"fixed\\\",\\n    \\\"commission\\\": 0.001,\\n    \\\"slippage\\\": 0.001,\\n    \\\"initialCapital\\\": 100000\\n  },\\n  \\\"stockSelection\\\": {\\n    \\\"exchanges\\\": [\\\"NAS\\\", \\\"NYS\\\"],\\n    \\\"rankingFactor\\\": \\\"pe_ttm\\\",\\n    \\\"rankingOrder\\\": \\\"ASC\\\",\\n    \\\"selectionConditions\\\": []\\n  },\\n  \\\"targetFinanceTypeList\\\": [\\\"STOCK\\\"],\\n  \\\"timingRules\\\": {\\n    \\\"triggerSchedule\\\": {\\n      \\\"frequency\\\": \\\"monthly\\\",\\n      \\\"every\\\": 1\\n    },\\n    \\\"buyConditions\\\": [\\n      {\\n        \\\"factor\\\": \\\"RANK_AFTER_SORT\\\",\\n        \\\"condition\\\": {\\n          \\\"conditionType\\\": \\\"CLOSE_CLOSE\\\",\\n          \\\"conditionValue\\\": \\\"<=10\\\"\\n        }\\n      }\\n    ],\\n    \\\"sellConditions\\\": [\\n      {\\n        \\\"factor\\\": \\\"RANK_AFTER_SORT\\\", \\n        \\\"condition\\\": {\\n          \\\"conditionType\\\": \\\"CLOSE_CLOSE\\\",\\n          \\\"conditionValue\\\": \\\">10\\\"\\n        }\\n      }\\n    ],\\n    \\\"positionLimits\\\": {\\n      \\\"perSecurityWeight\\\": 0.1,\\n      \\\"maxPositionWeight\\\": 0.15\\n    }\\n  }\\n}\"}",
+          "result_success": false,
+          "phase": "inject",
+          "blocked": true
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "original_params": "{\"query\": \"{\\n  \\\"backtestParams\\\": {\\n    \\\"startDate\\\": \\\"2021-01-01\\\",\\n    \\\"endDate\\\": \\\"2024-01-01\\\",\\n    \\\"commissionType\\\": \\\"fixed\\\",\\n    \\\"commission\\\": 0.001,\\n    \\\"slippage\\\": 0.001,\\n    \\\"initialCapital\\\": 100000\\n  },\\n  \\\"stockSelection\\\": {\\n    \\\"exchanges\\\": [\\\"NAS\\\", \\\"NYS\\\"],\\n    \\\"rankingFactor\\\": \\\"pe_ttm\\\",\\n    \\\"rankingOrder\\\": \\\"ASC\\\",\\n    \\\"selectionConditions\\\": [\\n      {\\n        \\\"factor\\\": \\\"pe_ttm\\\"\\n      }\\n    ]\\n  },\\n  \\\"targetFinanceTypeList\\\": [\\\"STOCK\\\"],\\n  \\\"timingRules\\\": {\\n    \\\"triggerSchedule\\\": {\\n      \\\"frequency\\\": \\\"monthly\\\",\\n      \\\"every\\\": 1\\n    },\\n    \\\"buyConditions\\\": [\\n      {\\n        \\\"factor\\\": \\\"RANK_AFTER_SORT\\\",\\n        \\\"condition\\\": {\\n          \\\"conditionType\\\": \\\"CLOSE_CLOSE\\\",\\n          \\\"conditionValue\\\": \\\"<=10\\\"\\n        }\\n      }\\n    ],\\n    \\\"sellConditions\\\": [\\n      {\\n        \\\"factor\\\": \\\"RANK_AFTER_SORT\\\", \\n        \\\"condition\\\": {\\n          \\\"conditionType\\\": \\\"CLOSE_CLOSE\\\",\\n          \\\"conditionValue\\\": \\\">10\\\"\\n        }\\n      }\\n    ],\\n    \\\"positionLimits\\\": {\\n      \\\"perSecurityWeight\\\": 0.1,\\n      \\\"maxPositionWeight\\\": 0.15\\n    }\\n  }\\n}\"}",
+          "actual_params": "{\"query\": \"{\\n  \\\"backtestParams\\\": {\\n    \\\"startDate\\\": \\\"2021-01-01\\\",\\n    \\\"endDate\\\": \\\"2024-01-01\\\",\\n    \\\"commissionType\\\": \\\"fixed\\\",\\n    \\\"commission\\\": 0.001,\\n    \\\"slippage\\\": 0.001,\\n    \\\"initialCapital\\\": 100000\\n  },\\n  \\\"stockSelection\\\": {\\n    \\\"exchanges\\\": [\\\"NAS\\\", \\\"NYS\\\"],\\n    \\\"rankingFactor\\\": \\\"pe_ttm\\\",\\n    \\\"rankingOrder\\\": \\\"ASC\\\",\\n    \\\"selectionConditions\\\": [\\n      {\\n        \\\"factor\\\": \\\"pe_ttm\\\"\\n      }\\n    ]\\n  },\\n  \\\"targetFinanceTypeList\\\": [\\\"STOCK\\\"],\\n  \\\"timingRules\\\": {\\n    \\\"triggerSchedule\\\": {\\n      \\\"frequency\\\": \\\"monthly\\\",\\n      \\\"every\\\": 1\\n    },\\n    \\\"buyConditions\\\": [\\n      {\\n        \\\"factor\\\": \\\"RANK_AFTER_SORT\\\",\\n        \\\"condition\\\": {\\n          \\\"conditionType\\\": \\\"CLOSE_CLOSE\\\",\\n          \\\"conditionValue\\\": \\\"<=10\\\"\\n        }\\n      }\\n    ],\\n    \\\"sellConditions\\\": [\\n      {\\n        \\\"factor\\\": \\\"RANK_AFTER_SORT\\\", \\n        \\\"condition\\\": {\\n          \\\"conditionType\\\": \\\"CLOSE_CLOSE\\\",\\n          \\\"conditionValue\\\": \\\">10\\\"\\n        }\\n      }\\n    ],\\n    \\\"positionLimits\\\": {\\n      \\\"perSecurityWeight\\\": 0.1,\\n      \\\"maxPositionWeight\\\": 0.15\\n    }\\n  }\\n}\"}",
+          "result_success": false,
+          "phase": "validate",
+          "blocked": true
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "original_params": "{\"query\": \"美股轮动策略回测，参数如下：\\n- 回测时间：2021-01-01到2024-01-01\\n- 交易所：纳斯达克和纽交所\\n- 排序因子：pe_ttm（市盈率）\\n- 排序方向：ASC（从低到高）\\n- 每月调仓一次\\n- 买入条件：排名前10名\\n- 卖出条件：排名超过10名时卖出\\n- 标的类型：股票\\n- 初始资金：100000\"}",
+          "actual_params": "{\"query\": \"美股轮动策略回测，参数如下：\\n- 回测时间：2021-01-01到2024-01-01\\n- 交易所：纳斯达克和纽交所\\n- 排序因子：pe_ttm（市盈率）\\n- 排序方向：ASC（从低到高）\\n- 每月调仓一次\\n- 买入条件：排名前10名\\n- 卖出条件：排名超过10名时卖出\\n- 标的类型：股票\\n- 初始资金：100000\"}",
+          "result_success": false,
+          "phase": "validate",
+          "blocked": true
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "original_params": "{\"query\": \"构建美股轮动策略，具体要求：\\n排序因子：pe_ttm，排序方向：ASC，选股条件：pe_ttm，买入条件：RANK_AFTER_SORT<=10，卖出条件：RANK_AFTER_SORT>10，标的类型：STOCK，交易所：NAS和NYS，每月调仓，回测期间2021-01-01到2024-01-01，初始资金100000\"}",
+          "actual_params": "{\"query\": \"构建美股轮动策略，具体要求：\\n排序因子：pe_ttm，排序方向：ASC，选股条件：pe_ttm，买入条件：RANK_AFTER_SORT<=10，卖出条件：RANK_AFTER_SORT>10，标的类型：STOCK，交易所：NAS和NYS，每月调仓，回测期间2021-01-01到2024-01-01，初始资金100000\"}",
+          "result_success": false,
+          "phase": "validate",
+          "blocked": true
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "original_params": "{\"query\": \"美股轮动策略回测需求：\\n排序因子（stockSelection.rankingFactor）：pe_ttm\\n排序方向（stockSelection.rankingOrder）：ASC  \\n选股条件（stockSelection.selectionConditions）：pe_ttm因子筛选\\n买入条件（timingRules.buyConditions）：排名前10位买入\\n卖出条件（timingRules.sellConditions）：排名超出前10位卖出\\n标的类型（targetFinanceTypeList）：STOCK\\n交易所：纳斯达克和纽交所\\n调仓频率：每月一次\\n回测时间：2021年到2024年\\n初始资金：10万美元\"}",
+          "actual_params": "{\"query\": \"美股轮动策略回测需求：\\n排序因子（stockSelection.rankingFactor）：pe_ttm\\n排序方向（stockSelection.rankingOrder）：ASC  \\n选股条件（stockSelection.selectionConditions）：pe_ttm因子筛选\\n买入条件（timingRules.buyConditions）：排名前10位买入\\n卖出条件（timingRules.sellConditions）：排名超出前10位卖出\\n标的类型（targetFinanceTypeList）：STOCK\\n交易所：纳斯达克和纽交所\\n调仓频率：每月一次\\n回测时间：2021年到2024年\\n初始资金：10万美元\"}",
+          "result_success": true,
+          "phase": "validate",
+          "blocked": false
+        }
+      ],
+      "validation_summary": {
+        "total_injections": 1,
+        "total_validations": 4,
+        "validated_true": 0,
+        "validated_false": 4,
+        "forced_pass": 1,
+        "details": [
+          {
+            "tool_name": "rotation_trading_backtest_service",
+            "call_number": 2,
+            "phase": "validate",
+            "passed": false,
+            "forced_pass": false,
+            "failed_fields": [
+              "arg0.stockSelection.rankingFactor",
+              "arg0.stockSelection.rankingOrder",
+              "arg0.stockSelection.selectionConditions",
+              "arg0.timingRules.buyConditions",
+              "arg0.timingRules.sellConditions",
+              "arg0.targetFinanceTypeList"
+            ],
+            "error_message": "Parameter validation failed with 6 error(s):\n  1. Missing required field '排序因子（stockSelection.rankingFactor）'. Please include 'rankingFactor' in your request.\n  2. Missing required field '排序方向（stockSelection.rankingOrder）'. Please include 'rankingOrder' in your request.\n  3. Missing required field '选股条件（stockSelection.selectionConditions）'. Please include 'selectionConditions' in your request.\n  4. Missing required field '买入条件（timingRules.buyConditions）'. Please include 'buyConditions' in your request.\n  5. Missing required field '卖出条件（timingRules.sellConditions）'. Please include 'sellConditions' in your request.\n  6. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+            "checks": [
+              {
+                "field": "arg0.stockSelection.rankingFactor",
+                "valid": false
+              },
+              {
+                "field": "arg0.stockSelection.rankingOrder",
+                "valid": false
+              },
+              {
+                "field": "arg0.stockSelection.selectionConditions",
+                "valid": false
+              },
+              {
+                "field": "arg0.timingRules.buyConditions",
+                "valid": false
+              },
+              {
+                "field": "arg0.timingRules.sellConditions",
+                "valid": false
+              },
+              {
+                "field": "arg0.targetFinanceTypeList",
+                "valid": false
+              }
+            ]
+          },
+          {
+            "tool_name": "rotation_trading_backtest_service",
+            "call_number": 3,
+            "phase": "validate",
+            "passed": false,
+            "forced_pass": false,
+            "failed_fields": [
+              "arg0.stockSelection.rankingFactor",
+              "arg0.stockSelection.rankingOrder",
+              "arg0.stockSelection.selectionConditions",
+              "arg0.timingRules.buyConditions",
+              "arg0.timingRules.sellConditions",
+              "arg0.targetFinanceTypeList"
+            ],
+            "error_message": "Parameter validation failed with 6 error(s):\n  1. Missing required field '排序因子（stockSelection.rankingFactor）'. Please include 'rankingFactor' in your request.\n  2. Missing required field '排序方向（stockSelection.rankingOrder）'. Please include 'rankingOrder' in your request.\n  3. Missing required field '选股条件（stockSelection.selectionConditions）'. Please include 'selectionConditions' in your request.\n  4. Missing required field '买入条件（timingRules.buyConditions）'. Please include 'buyConditions' in your request.\n  5. Missing required field '卖出条件（timingRules.sellConditions）'. Please include 'sellConditions' in your request.\n  6. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+            "checks": [
+              {
+                "field": "arg0.stockSelection.rankingFactor",
+                "valid": false
+              },
+              {
+                "field": "arg0.stockSelection.rankingOrder",
+                "valid": false
+              },
+              {
+                "field": "arg0.stockSelection.selectionConditions",
+                "valid": false
+              },
+              {
+                "field": "arg0.timingRules.buyConditions",
+                "valid": false
+              },
+              {
+                "field": "arg0.timingRules.sellConditions",
+                "valid": false
+              },
+              {
+                "field": "arg0.targetFinanceTypeList",
+                "valid": false
+              }
+            ]
+          },
+          {
+            "tool_name": "rotation_trading_backtest_service",
+            "call_number": 4,
+            "phase": "validate",
+            "passed": false,
+            "forced_pass": false,
+            "failed_fields": [
+              "arg0.stockSelection.rankingFactor",
+              "arg0.stockSelection.rankingOrder",
+              "arg0.stockSelection.selectionConditions",
+              "arg0.timingRules.buyConditions",
+              "arg0.timingRules.sellConditions",
+              "arg0.targetFinanceTypeList"
+            ],
+            "error_message": "Parameter validation failed with 6 error(s):\n  1. Missing required field '排序因子（stockSelection.rankingFactor）'. Please include 'rankingFactor' in your request.\n  2. Missing required field '排序方向（stockSelection.rankingOrder）'. Please include 'rankingOrder' in your request.\n  3. Missing required field '选股条件（stockSelection.selectionConditions）'. Please include 'selectionConditions' in your request.\n  4. Missing required field '买入条件（timingRules.buyConditions）'. Please include 'buyConditions' in your request.\n  5. Missing required field '卖出条件（timingRules.sellConditions）'. Please include 'sellConditions' in your request.\n  6. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+            "checks": [
+              {
+                "field": "arg0.stockSelection.rankingFactor",
+                "valid": false
+              },
+              {
+                "field": "arg0.stockSelection.rankingOrder",
+                "valid": false
+              },
+              {
+                "field": "arg0.stockSelection.selectionConditions",
+                "valid": false
+              },
+              {
+                "field": "arg0.timingRules.buyConditions",
+                "valid": false
+              },
+              {
+                "field": "arg0.timingRules.sellConditions",
+                "valid": false
+              },
+              {
+                "field": "arg0.targetFinanceTypeList",
+                "valid": false
+              }
+            ]
+          },
+          {
+            "tool_name": "rotation_trading_backtest_service",
+            "call_number": 5,
+            "phase": "validate",
+            "passed": false,
+            "forced_pass": true,
+            "reason": "exceeded max retries (3), forced pass",
+            "failed_fields": []
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "buysell_001",
+      "architecture": "A",
+      "scenario": "buysell_missing_securities",
+      "run_index": 1,
+      "timestamp": "2026-02-25T16:40:46.966992",
+      "metrics": {
+        "total_turns": 5,
+        "tool_calls": 4,
+        "error_count": 0,
+        "skills_calls": 0,
+        "recovery_attempts": 0,
+        "recovery_successes": 0,
+        "input_tokens": 24819,
+        "output_tokens": 1212,
+        "elapsed_time": 32.16727066040039
+      },
+      "task_history": [
+        {
+          "step": 1,
+          "tool": "stock_mapping",
+          "params": {
+            "query": "苹果和微软"
+          },
+          "result": {
+            "success": true,
+            "message": "证券代码映射完成",
+            "data": {
+              "stocks": [
+                {
+                  "name": "苹果",
+                  "code": "AAPL",
+                  "market": "纳斯达克"
+                },
+                {
+                  "name": "微软",
+                  "code": "MSFT",
+                  "market": "纳斯达克"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 2,
+          "tool": "factor_mapping",
+          "params": {
+            "query": "RSI相对强弱指数"
+          },
+          "result": {
+            "success": true,
+            "message": "因子映射完成",
+            "data": {
+              "factors": [
+                {
+                  "name": "市盈率",
+                  "code": "pe_ttm",
+                  "unit": "倍"
+                },
+                {
+                  "name": "市净率",
+                  "code": "pb",
+                  "unit": "倍"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 3,
+          "tool": "factor_mapping",
+          "params": {
+            "query": "RSI指标 相对强弱指数 技术分析指标"
+          },
+          "result": {
+            "success": true,
+            "message": "因子映射完成",
+            "data": {
+              "factors": [
+                {
+                  "name": "市盈率",
+                  "code": "pe_ttm",
+                  "unit": "倍"
+                },
+                {
+                  "name": "市净率",
+                  "code": "pb",
+                  "unit": "倍"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 4,
+          "tool": "rotation_trading_backtest_service",
+          "params": {
+            "arg0": {
+              "stockSelection": {
+                "securities": [
+                  "AAPL",
+                  "MSFT"
+                ],
+                "rankingFactor": "pe_ttm",
+                "rankingOrder": "ASC",
+                "selectionConditions": []
+              },
+              "timingRules": {
+                "buyConditions": [
+                  {
+                    "factor": "pe_ttm",
+                    "condition": {
+                      "conditionType": "CLOSE_CLOSE",
+                      "conditionValue": "< 30"
+                    }
+                  }
+                ],
+                "sellConditions": [
+                  {
+                    "factor": "pe_ttm",
+                    "condition": {
+                      "conditionType": "CLOSE_CLOSE",
+                      "conditionValue": "> 70"
+                    }
+                  }
+                ],
+                "triggerSchedule": {
+                  "frequency": "daily",
+                  "every": 1
+                },
+                "positionLimits": {
+                  "maxPositionWeight": 1.0,
+                  "perSecurityWeight": 1.0,
+                  "rebalanceTargetWeight": 1.0
+                }
+              },
+              "targetFinanceTypeList": [
+                "STOCK"
+              ],
+              "backtestParams": {
+                "startDate": "2020-01-01",
+                "endDate": "2024-12-31",
+                "commissionType": "percentage"
+              }
+            }
+          },
+          "result": {
+            "success": true,
+            "message": "轮动交易模型回测完成",
+            "data": {
+              "backtest_results": {
+                "total_return": 0.256,
+                "sharpe_ratio": 1.45,
+                "max_drawdown": -0.15
+              },
+              "image_component": {
+                "image_id": "rotation_001"
+              }
+            }
+          }
+        }
+      ],
+      "final_response_length": 398,
+      "injection_log": [],
+      "executor_log": [
+        {
+          "tool_name": "stock_mapping",
+          "original_params": "{\"query\": \"苹果和微软\"}",
+          "actual_params": "{\"query\": \"苹果和微软\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "factor_mapping",
+          "original_params": "{\"query\": \"RSI相对强弱指数\"}",
+          "actual_params": "{\"query\": \"RSI相对强弱指数\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "factor_mapping",
+          "original_params": "{\"query\": \"RSI指标 相对强弱指数 技术分析指标\"}",
+          "actual_params": "{\"query\": \"RSI指标 相对强弱指数 技术分析指标\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "rotation_trading_backtest_service",
+          "original_params": "{\"arg0\": {\"stockSelection\": {\"securities\": [\"AAPL\", \"MSFT\"], \"rankingFactor\": \"pe_ttm\", \"rankingOrder\": \"ASC\", \"selectionConditions\": []}, \"timingRules\": {\"buyConditions\": [{\"factor\": \"pe_ttm\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"< 30\"}}], \"sellConditions\": [{\"factor\": \"pe_ttm\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"> 70\"}}], \"triggerSchedule\": {\"frequency\": \"daily\", \"every\": 1}, \"positionLimits\": {\"maxPositionWeight\": 1.0, \"perSecurityWeight\": 1.0, \"rebalanceTargetWeight\": 1.0}}, \"targetFinanceTypeList\": [\"STOCK\"], \"backtestParams\": {\"startDate\": \"2020-01-01\", \"endDate\": \"2024-12-31\", \"commissionType\": \"percentage\"}}}",
+          "actual_params": "{\"arg0\": {\"stockSelection\": {\"securities\": [\"AAPL\", \"MSFT\"], \"rankingFactor\": \"pe_ttm\", \"rankingOrder\": \"ASC\", \"selectionConditions\": []}, \"timingRules\": {\"buyConditions\": [{\"factor\": \"pe_ttm\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"< 30\"}}], \"sellConditions\": [{\"factor\": \"pe_ttm\", \"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"> 70\"}}], \"triggerSchedule\": {\"frequency\": \"daily\", \"every\": 1}, \"positionLimits\": {\"maxPositionWeight\": 1.0, \"perSecurityWeight\": 1.0, \"rebalanceTargetWeight\": 1.0}}, \"targetFinanceTypeList\": [\"STOCK\"], \"backtestParams\": {\"startDate\": \"2020-01-01\", \"endDate\": \"2024-12-31\", \"commissionType\": \"percentage\"}}}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        }
+      ],
+      "validation_summary": {
+        "total_injections": 0,
+        "total_validations": 0,
+        "validated_true": 0,
+        "validated_false": 0,
+        "forced_pass": 0,
+        "details": []
+      }
+    },
+    {
+      "test_case_id": "buysell_001",
+      "architecture": "B",
+      "scenario": "buysell_missing_securities",
+      "run_index": 1,
+      "timestamp": "2026-02-25T16:41:19.135011",
+      "metrics": {
+        "total_turns": 8,
+        "tool_calls": 7,
+        "error_count": 1,
+        "schema_loads": 1,
+        "recovery_attempts": 1,
+        "recovery_successes": 1,
+        "input_tokens": 37614,
+        "output_tokens": 1678,
+        "elapsed_time": 34.12741827964783
+      },
+      "task_history": [
+        {
+          "step": 1,
+          "tool": "stock_mapping",
+          "params": {
+            "query": "苹果和微软"
+          },
+          "result": {
+            "success": true,
+            "message": "证券代码映射完成",
+            "data": {
+              "stocks": [
+                {
+                  "name": "苹果",
+                  "code": "AAPL",
+                  "market": "纳斯达克"
+                },
+                {
+                  "name": "微软",
+                  "code": "MSFT",
+                  "market": "纳斯达克"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 2,
+          "tool": "factor_mapping",
+          "params": {
+            "query": "RSI相对强弱指标"
+          },
+          "result": {
+            "success": true,
+            "message": "因子映射完成",
+            "data": {
+              "factors": [
+                {
+                  "name": "市盈率",
+                  "code": "pe_ttm",
+                  "unit": "倍"
+                },
+                {
+                  "name": "市净率",
+                  "code": "pb",
+                  "unit": "倍"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 3,
+          "tool": "factor_mapping",
+          "params": {
+            "query": "RSI 技术指标 相对强弱指数"
+          },
+          "result": {
+            "success": true,
+            "message": "因子映射完成",
+            "data": {
+              "factors": [
+                {
+                  "name": "市盈率",
+                  "code": "pe_ttm",
+                  "unit": "倍"
+                },
+                {
+                  "name": "市净率",
+                  "code": "pb",
+                  "unit": "倍"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 4,
+          "tool": "factor_selection",
+          "params": {
+            "trading_model": "买卖交易模型",
+            "asset_type": "美股",
+            "strategy_style": "成长策略",
+            "user_specified_factors": [
+              "RSI"
+            ]
+          },
+          "result": {
+            "success": true,
+            "message": "因子选择完成",
+            "data": {
+              "core_stock_factors": [
+                {
+                  "code": "pb",
+                  "name": "市净率"
+                }
+              ],
+              "core_timing_factors": [
+                {
+                  "code": "rsi_14",
+                  "name": "RSI14"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 5,
+          "tool": "buy_sell_backtest_service",
+          "params": {
+            "arg0": {
+              "backtestParams": {
+                "adjustmentType": "forward",
+                "benchmark": "GSPC",
+                "commission": 0.001,
+                "commissionType": "PERCENT",
+                "endDate": "2025-07-01",
+                "initialCapital": 100000,
+                "slippage": 0.0025,
+                "startDate": "2020-01-01"
+              },
+              "buyRules": [
+                {
+                  "ruleConditionList": [
+                    {
+                      "condition": {
+                        "conditionType": "CLOSE_CLOSE",
+                        "conditionValue": "<30"
+                      },
+                      "factor": "rsi_14"
+                    }
+                  ],
+                  "tradePct": 1.0
+                }
+              ],
+              "sellRules": [
+                {
+                  "ruleConditionList": [
+                    {
+                      "condition": {
+                        "conditionType": "CLOSE_CLOSE",
+                        "conditionValue": ">70"
+                      },
+                      "factor": "rsi_14"
+                    }
+                  ],
+                  "tradePct": 1.0
+                }
+              ],
+              "targetFinanceTypeList": [
+                "STOCK"
+              ]
+            }
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Missing required field 'securities'. Please provide a list of security tickers."
+          }
+        },
+        {
+          "step": 6,
+          "tool": "buy_sell_backtest_service",
+          "params": {
+            "arg0": {
+              "securities": [
+                "AAPL",
+                "MSFT"
+              ],
+              "backtestParams": {
+                "adjustmentType": "forward",
+                "benchmark": "GSPC",
+                "commission": 0.001,
+                "commissionType": "PERCENT",
+                "endDate": "2025-07-01",
+                "initialCapital": 100000,
+                "slippage": 0.0025,
+                "startDate": "2020-01-01"
+              },
+              "buyRules": [
+                {
+                  "ruleConditionList": [
+                    {
+                      "condition": {
+                        "conditionType": "CLOSE_CLOSE",
+                        "conditionValue": "<30"
+                      },
+                      "factor": "rsi_14"
+                    }
+                  ],
+                  "tradePct": 1.0
+                }
+              ],
+              "sellRules": [
+                {
+                  "ruleConditionList": [
+                    {
+                      "condition": {
+                        "conditionType": "CLOSE_CLOSE",
+                        "conditionValue": ">70"
+                      },
+                      "factor": "rsi_14"
+                    }
+                  ],
+                  "tradePct": 1.0
+                }
+              ],
+              "targetFinanceTypeList": [
+                "STOCK"
+              ]
+            }
+          },
+          "result": {
+            "success": true,
+            "message": "买卖交易模型回测完成",
+            "data": {
+              "backtest_results": {
+                "total_return": 0.186,
+                "sharpe_ratio": 1.25,
+                "max_drawdown": -0.12
+              },
+              "image_component": {
+                "image_id": "buy_sell_001"
+              }
+            }
+          }
+        }
+      ],
+      "final_response_length": 472,
+      "injection_log": [
+        {
+          "tool_name": "buy_sell_backtest_service",
+          "call_number": 1,
+          "phase": "inject",
+          "rule_key": "buysell_missing_securities",
+          "field_path": "arg0.securities",
+          "error_message": "Missing required field 'securities'. Please provide a list of security tickers."
+        },
+        {
+          "tool_name": "buy_sell_backtest_service",
+          "call_number": 2,
+          "phase": "validate",
+          "passed": true,
+          "forced_pass": false,
+          "failed_fields": [],
+          "checks": [
+            {
+              "field": "arg0.securities",
+              "valid": true
+            },
+            {
+              "field": "arg0.buyRules",
+              "valid": true
+            },
+            {
+              "field": "arg0.sellRules",
+              "valid": true
+            },
+            {
+              "field": "arg0.targetFinanceTypeList",
+              "valid": true
+            }
+          ]
+        }
+      ],
+      "executor_log": [
+        {
+          "tool_name": "stock_mapping",
+          "original_params": "{\"query\": \"苹果和微软\"}",
+          "actual_params": "{\"query\": \"苹果和微软\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "factor_mapping",
+          "original_params": "{\"query\": \"RSI相对强弱指标\"}",
+          "actual_params": "{\"query\": \"RSI相对强弱指标\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "factor_mapping",
+          "original_params": "{\"query\": \"RSI 技术指标 相对强弱指数\"}",
+          "actual_params": "{\"query\": \"RSI 技术指标 相对强弱指数\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "factor_selection",
+          "original_params": "{\"trading_model\": \"买卖交易模型\", \"asset_type\": \"美股\", \"strategy_style\": \"成长策略\", \"user_specified_factors\": [\"RSI\"]}",
+          "actual_params": "{\"trading_model\": \"买卖交易模型\", \"asset_type\": \"美股\", \"strategy_style\": \"成长策略\", \"user_specified_factors\": [\"RSI\"]}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "buy_sell_backtest_service",
+          "original_params": "{\"arg0\": {\"backtestParams\": {\"adjustmentType\": \"forward\", \"benchmark\": \"GSPC\", \"commission\": 0.001, \"commissionType\": \"PERCENT\", \"endDate\": \"2025-07-01\", \"initialCapital\": 100000, \"slippage\": 0.0025, \"startDate\": \"2020-01-01\"}, \"buyRules\": [{\"ruleConditionList\": [{\"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"<30\"}, \"factor\": \"rsi_14\"}], \"tradePct\": 1.0}], \"securities\": [\"AAPL\", \"MSFT\"], \"sellRules\": [{\"ruleConditionList\": [{\"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \">70\"}, \"factor\": \"rsi_14\"}], \"tradePct\": 1.0}], \"targetFinanceTypeList\": [\"STOCK\"]}}",
+          "actual_params": "{\"arg0\": {\"backtestParams\": {\"adjustmentType\": \"forward\", \"benchmark\": \"GSPC\", \"commission\": 0.001, \"commissionType\": \"PERCENT\", \"endDate\": \"2025-07-01\", \"initialCapital\": 100000, \"slippage\": 0.0025, \"startDate\": \"2020-01-01\"}, \"buyRules\": [{\"ruleConditionList\": [{\"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"<30\"}, \"factor\": \"rsi_14\"}], \"tradePct\": 1.0}], \"sellRules\": [{\"ruleConditionList\": [{\"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \">70\"}, \"factor\": \"rsi_14\"}], \"tradePct\": 1.0}], \"targetFinanceTypeList\": [\"STOCK\"]}}",
+          "result_success": false,
+          "phase": "inject",
+          "blocked": true
+        },
+        {
+          "tool_name": "buy_sell_backtest_service",
+          "original_params": "{\"arg0\": {\"securities\": [\"AAPL\", \"MSFT\"], \"backtestParams\": {\"adjustmentType\": \"forward\", \"benchmark\": \"GSPC\", \"commission\": 0.001, \"commissionType\": \"PERCENT\", \"endDate\": \"2025-07-01\", \"initialCapital\": 100000, \"slippage\": 0.0025, \"startDate\": \"2020-01-01\"}, \"buyRules\": [{\"ruleConditionList\": [{\"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"<30\"}, \"factor\": \"rsi_14\"}], \"tradePct\": 1.0}], \"sellRules\": [{\"ruleConditionList\": [{\"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \">70\"}, \"factor\": \"rsi_14\"}], \"tradePct\": 1.0}], \"targetFinanceTypeList\": [\"STOCK\"]}}",
+          "actual_params": "{\"arg0\": {\"securities\": [\"AAPL\", \"MSFT\"], \"backtestParams\": {\"adjustmentType\": \"forward\", \"benchmark\": \"GSPC\", \"commission\": 0.001, \"commissionType\": \"PERCENT\", \"endDate\": \"2025-07-01\", \"initialCapital\": 100000, \"slippage\": 0.0025, \"startDate\": \"2020-01-01\"}, \"buyRules\": [{\"ruleConditionList\": [{\"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \"<30\"}, \"factor\": \"rsi_14\"}], \"tradePct\": 1.0}], \"sellRules\": [{\"ruleConditionList\": [{\"condition\": {\"conditionType\": \"CLOSE_CLOSE\", \"conditionValue\": \">70\"}, \"factor\": \"rsi_14\"}], \"tradePct\": 1.0}], \"targetFinanceTypeList\": [\"STOCK\"]}}",
+          "result_success": true,
+          "phase": "validate",
+          "blocked": false
+        }
+      ],
+      "validation_summary": {
+        "total_injections": 1,
+        "total_validations": 1,
+        "validated_true": 1,
+        "validated_false": 0,
+        "forced_pass": 0,
+        "details": [
+          {
+            "tool_name": "buy_sell_backtest_service",
+            "call_number": 2,
+            "phase": "validate",
+            "passed": true,
+            "forced_pass": false,
+            "failed_fields": [],
+            "checks": [
+              {
+                "field": "arg0.securities",
+                "valid": true
+              },
+              {
+                "field": "arg0.buyRules",
+                "valid": true
+              },
+              {
+                "field": "arg0.sellRules",
+                "valid": true
+              },
+              {
+                "field": "arg0.targetFinanceTypeList",
+                "valid": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "fixed_001",
+      "architecture": "A",
+      "scenario": "fixed_missing_trigger",
+      "run_index": 1,
+      "timestamp": "2026-02-25T16:41:53.263598",
+      "metrics": {
+        "total_turns": 9,
+        "tool_calls": 8,
+        "error_count": 4,
+        "skills_calls": 1,
+        "recovery_attempts": 4,
+        "recovery_successes": 1,
+        "input_tokens": 59486,
+        "output_tokens": 2351,
+        "elapsed_time": 47.36716842651367
+      },
+      "task_history": [
+        {
+          "step": 1,
+          "tool": "stock_mapping",
+          "params": {
+            "query": "SPY"
+          },
+          "result": {
+            "success": true,
+            "message": "证券代码映射完成",
+            "data": {
+              "stocks": [
+                {
+                  "name": "苹果",
+                  "code": "AAPL",
+                  "market": "纳斯达克"
+                },
+                {
+                  "name": "微软",
+                  "code": "MSFT",
+                  "market": "纳斯达克"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 2,
+          "tool": "stock_mapping",
+          "params": {
+            "query": "SPDR S&P 500 ETF Trust SPY ETF"
+          },
+          "result": {
+            "success": true,
+            "message": "证券代码映射完成",
+            "data": {
+              "stocks": [
+                {
+                  "name": "苹果",
+                  "code": "AAPL",
+                  "market": "纳斯达克"
+                },
+                {
+                  "name": "微软",
+                  "code": "MSFT",
+                  "market": "纳斯达克"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 3,
+          "tool": "fixed_investment_backtest_service",
+          "params": {
+            "arg0": {
+              "stockPoolScales": [
+                {
+                  "securityCode": "SPY",
+                  "weight": 1.0
+                }
+              ],
+              "targetFinanceTypeList": [
+                "ETF"
+              ],
+              "investmentAmount": 500,
+              "backtestParams": {
+                "commissionType": "UNKNOWN",
+                "startDate": "2019-01-01",
+                "endDate": "2024-01-01"
+              }
+            }
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Missing required field 'triggerSchedule'. Please include triggerSchedule with 'every' and 'frequency'."
+          }
+        },
+        {
+          "step": 4,
+          "tool": "fixed_investment_backtest_service",
+          "params": {
+            "arg0": {
+              "stockPoolScales": [
+                {
+                  "securityCode": "SPY",
+                  "weight": 1.0
+                }
+              ],
+              "targetFinanceTypeList": [
+                "ETF"
+              ],
+              "investmentAmount": 500,
+              "triggerSchedule": {
+                "every": 1,
+                "frequency": "weekly"
+              },
+              "backtestParams": {
+                "commissionType": "percentage",
+                "startDate": "2019-01-01",
+                "endDate": "2024-01-01"
+              }
+            }
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Parameter validation failed with 1 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters."
+          }
+        },
+        {
+          "step": 5,
+          "tool": "fixed_investment_backtest_service",
+          "params": {
+            "arg0": {
+              "stockPoolScales": [
+                {
+                  "securityCode": "SPY",
+                  "weight": 1.0
+                }
+              ],
+              "targetFinanceTypeList": [
+                "ETF"
+              ],
+              "investmentAmount": 500,
+              "triggerSchedule": {
+                "every": 1,
+                "frequency": "weekly"
+              },
+              "backtestParams": {
+                "commissionType": "percentage",
+                "startDate": "2019-01-01",
+                "endDate": "2024-01-01"
+              }
+            }
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Parameter validation failed with 1 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters."
+          }
+        },
+        {
+          "step": 6,
+          "tool": "fixed_investment_backtest_service",
+          "params": {
+            "arg0": {
+              "stockPoolScales": [
+                {
+                  "securityCode": "SPY",
+                  "weight": 1.0
+                }
+              ],
+              "targetFinanceTypeList": [
+                "ETF"
+              ],
+              "investmentAmount": 500,
+              "triggerSchedule": {
+                "every": 1,
+                "frequency": "weekly"
+              },
+              "backtestParams": {
+                "commissionType": "percentage",
+                "startDate": "2019-01-01",
+                "endDate": "2024-01-01"
+              }
+            }
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Parameter validation failed with 1 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters."
+          }
+        },
+        {
+          "step": 7,
+          "tool": "fixed_investment_backtest_service",
+          "params": {
+            "arg0": {
+              "stockPoolScales": [
+                {
+                  "securityCode": "SPY",
+                  "weight": 1.0
+                }
+              ],
+              "targetFinanceTypeList": [
+                "ETF"
+              ],
+              "investmentAmount": 500,
+              "triggerSchedule": {
+                "every": 1,
+                "frequency": "weekly"
+              },
+              "backtestParams": {
+                "commissionType": "percentage",
+                "startDate": "2019-01-01",
+                "endDate": "2024-01-01"
+              }
+            }
+          },
+          "result": {
+            "success": true,
+            "message": "定投交易模型回测完成",
+            "data": {
+              "backtest_results": {
+                "total_return": 0.156,
+                "sharpe_ratio": 1.05,
+                "max_drawdown": -0.08
+              },
+              "image_component": {
+                "image_id": "fixed_001"
+              }
+            }
+          }
+        }
+      ],
+      "final_response_length": 484,
+      "injection_log": [
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "call_number": 1,
+          "phase": "inject",
+          "rule_key": "fixed_missing_triggerSchedule",
+          "field_path": "arg0.triggerSchedule",
+          "error_message": "Missing required field 'triggerSchedule'. Please include triggerSchedule with 'every' and 'frequency'."
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "call_number": 2,
+          "phase": "validate",
+          "passed": false,
+          "forced_pass": false,
+          "failed_fields": [
+            "arg0.securities"
+          ],
+          "error_message": "Parameter validation failed with 1 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+          "checks": [
+            {
+              "field": "arg0.securities",
+              "valid": false
+            },
+            {
+              "field": "arg0.investmentAmount",
+              "valid": true
+            },
+            {
+              "field": "arg0.triggerSchedule",
+              "valid": true
+            },
+            {
+              "field": "arg0.targetFinanceTypeList",
+              "valid": true
+            }
+          ]
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "call_number": 3,
+          "phase": "validate",
+          "passed": false,
+          "forced_pass": false,
+          "failed_fields": [
+            "arg0.securities"
+          ],
+          "error_message": "Parameter validation failed with 1 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+          "checks": [
+            {
+              "field": "arg0.securities",
+              "valid": false
+            },
+            {
+              "field": "arg0.investmentAmount",
+              "valid": true
+            },
+            {
+              "field": "arg0.triggerSchedule",
+              "valid": true
+            },
+            {
+              "field": "arg0.targetFinanceTypeList",
+              "valid": true
+            }
+          ]
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "call_number": 4,
+          "phase": "validate",
+          "passed": false,
+          "forced_pass": false,
+          "failed_fields": [
+            "arg0.securities"
+          ],
+          "error_message": "Parameter validation failed with 1 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+          "checks": [
+            {
+              "field": "arg0.securities",
+              "valid": false
+            },
+            {
+              "field": "arg0.investmentAmount",
+              "valid": true
+            },
+            {
+              "field": "arg0.triggerSchedule",
+              "valid": true
+            },
+            {
+              "field": "arg0.targetFinanceTypeList",
+              "valid": true
+            }
+          ]
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "call_number": 5,
+          "phase": "validate",
+          "passed": false,
+          "forced_pass": true,
+          "reason": "exceeded max retries (3), forced pass",
+          "failed_fields": []
+        }
+      ],
+      "executor_log": [
+        {
+          "tool_name": "stock_mapping",
+          "original_params": "{\"query\": \"SPY\"}",
+          "actual_params": "{\"query\": \"SPY\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "stock_mapping",
+          "original_params": "{\"query\": \"SPDR S&P 500 ETF Trust SPY ETF\"}",
+          "actual_params": "{\"query\": \"SPDR S&P 500 ETF Trust SPY ETF\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "original_params": "{\"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"triggerSchedule\": {\"every\": 1, \"frequency\": \"weekly\"}, \"backtestParams\": {\"commissionType\": \"UNKNOWN\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "actual_params": "{\"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"backtestParams\": {\"commissionType\": \"UNKNOWN\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "result_success": false,
+          "phase": "inject",
+          "blocked": true
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "original_params": "{\"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"triggerSchedule\": {\"every\": 1, \"frequency\": \"weekly\"}, \"backtestParams\": {\"commissionType\": \"percentage\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "actual_params": "{\"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"triggerSchedule\": {\"every\": 1, \"frequency\": \"weekly\"}, \"backtestParams\": {\"commissionType\": \"percentage\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "result_success": false,
+          "phase": "validate",
+          "blocked": true
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "original_params": "{\"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"triggerSchedule\": {\"every\": 1, \"frequency\": \"weekly\"}, \"backtestParams\": {\"commissionType\": \"percentage\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "actual_params": "{\"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"triggerSchedule\": {\"every\": 1, \"frequency\": \"weekly\"}, \"backtestParams\": {\"commissionType\": \"percentage\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "result_success": false,
+          "phase": "validate",
+          "blocked": true
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "original_params": "{\"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"triggerSchedule\": {\"every\": 1, \"frequency\": \"weekly\"}, \"backtestParams\": {\"commissionType\": \"percentage\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "actual_params": "{\"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"triggerSchedule\": {\"every\": 1, \"frequency\": \"weekly\"}, \"backtestParams\": {\"commissionType\": \"percentage\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "result_success": false,
+          "phase": "validate",
+          "blocked": true
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "original_params": "{\"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"triggerSchedule\": {\"every\": 1, \"frequency\": \"weekly\"}, \"backtestParams\": {\"commissionType\": \"percentage\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "actual_params": "{\"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"triggerSchedule\": {\"every\": 1, \"frequency\": \"weekly\"}, \"backtestParams\": {\"commissionType\": \"percentage\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "result_success": true,
+          "phase": "validate",
+          "blocked": false
+        }
+      ],
+      "validation_summary": {
+        "total_injections": 1,
+        "total_validations": 4,
+        "validated_true": 0,
+        "validated_false": 4,
+        "forced_pass": 1,
+        "details": [
+          {
+            "tool_name": "fixed_investment_backtest_service",
+            "call_number": 2,
+            "phase": "validate",
+            "passed": false,
+            "forced_pass": false,
+            "failed_fields": [
+              "arg0.securities"
+            ],
+            "error_message": "Parameter validation failed with 1 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+            "checks": [
+              {
+                "field": "arg0.securities",
+                "valid": false
+              },
+              {
+                "field": "arg0.investmentAmount",
+                "valid": true
+              },
+              {
+                "field": "arg0.triggerSchedule",
+                "valid": true
+              },
+              {
+                "field": "arg0.targetFinanceTypeList",
+                "valid": true
+              }
+            ]
+          },
+          {
+            "tool_name": "fixed_investment_backtest_service",
+            "call_number": 3,
+            "phase": "validate",
+            "passed": false,
+            "forced_pass": false,
+            "failed_fields": [
+              "arg0.securities"
+            ],
+            "error_message": "Parameter validation failed with 1 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+            "checks": [
+              {
+                "field": "arg0.securities",
+                "valid": false
+              },
+              {
+                "field": "arg0.investmentAmount",
+                "valid": true
+              },
+              {
+                "field": "arg0.triggerSchedule",
+                "valid": true
+              },
+              {
+                "field": "arg0.targetFinanceTypeList",
+                "valid": true
+              }
+            ]
+          },
+          {
+            "tool_name": "fixed_investment_backtest_service",
+            "call_number": 4,
+            "phase": "validate",
+            "passed": false,
+            "forced_pass": false,
+            "failed_fields": [
+              "arg0.securities"
+            ],
+            "error_message": "Parameter validation failed with 1 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+            "checks": [
+              {
+                "field": "arg0.securities",
+                "valid": false
+              },
+              {
+                "field": "arg0.investmentAmount",
+                "valid": true
+              },
+              {
+                "field": "arg0.triggerSchedule",
+                "valid": true
+              },
+              {
+                "field": "arg0.targetFinanceTypeList",
+                "valid": true
+              }
+            ]
+          },
+          {
+            "tool_name": "fixed_investment_backtest_service",
+            "call_number": 5,
+            "phase": "validate",
+            "passed": false,
+            "forced_pass": true,
+            "reason": "exceeded max retries (3), forced pass",
+            "failed_fields": []
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "fixed_001",
+      "architecture": "B",
+      "scenario": "fixed_missing_trigger",
+      "run_index": 1,
+      "timestamp": "2026-02-25T16:42:40.632908",
+      "metrics": {
+        "total_turns": 8,
+        "tool_calls": 7,
+        "error_count": 4,
+        "schema_loads": 1,
+        "recovery_attempts": 4,
+        "recovery_successes": 1,
+        "input_tokens": 39465,
+        "output_tokens": 1519,
+        "elapsed_time": 33.27921533584595
+      },
+      "task_history": [
+        {
+          "step": 1,
+          "tool": "stock_mapping",
+          "params": {
+            "query": "SPY"
+          },
+          "result": {
+            "success": true,
+            "message": "证券代码映射完成",
+            "data": {
+              "stocks": [
+                {
+                  "name": "苹果",
+                  "code": "AAPL",
+                  "market": "纳斯达克"
+                },
+                {
+                  "name": "微软",
+                  "code": "MSFT",
+                  "market": "纳斯达克"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "step": 2,
+          "tool": "fixed_investment_backtest_service",
+          "params": {
+            "query": "定投回测参数",
+            "arg0": {
+              "stockPoolScales": [
+                {
+                  "securityCode": "SPY",
+                  "weight": 1.0
+                }
+              ],
+              "targetFinanceTypeList": [
+                "ETF"
+              ],
+              "investmentAmount": 500,
+              "backtestParams": {
+                "commissionType": "percent",
+                "startDate": "2019-01-01",
+                "endDate": "2024-01-01"
+              }
+            }
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Missing required field 'triggerSchedule'. Please include triggerSchedule with 'every' and 'frequency'."
+          }
+        },
+        {
+          "step": 3,
+          "tool": "fixed_investment_backtest_service",
+          "params": {
+            "query": "定投回测参数",
+            "arg0": {
+              "stockPoolScales": [
+                {
+                  "securityCode": "SPY",
+                  "weight": 1.0
+                }
+              ],
+              "targetFinanceTypeList": [
+                "ETF"
+              ],
+              "investmentAmount": 500,
+              "triggerSchedule": {
+                "every": 1,
+                "frequency": "weekly"
+              },
+              "backtestParams": {
+                "commissionType": "percent",
+                "startDate": "2019-01-01",
+                "endDate": "2024-01-01"
+              }
+            }
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Parameter validation failed with 1 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters."
+          }
+        },
+        {
+          "step": 4,
+          "tool": "fixed_investment_backtest_service",
+          "params": {
+            "query": "每周定投SPY 500美元，从2019年1月开始到2024年1月结束，共5年时间。请使用ETF作为资产类型，每周投资频率。"
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Parameter validation failed with 4 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n  2. Missing required field '定投金额（investmentAmount）'. Please include 'investmentAmount' in your request.\n  3. Missing required field '定投触发时间（triggerSchedule）'. Please include 'triggerSchedule' in your request.\n  4. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters."
+          }
+        },
+        {
+          "step": 5,
+          "tool": "fixed_investment_backtest_service",
+          "params": {
+            "query": "定投策略回测：证券列表为SPY（权重100%），定投金额500美元，每周定投（频率weekly，间隔1），标的类型为ETF，回测时间从2019年1月1日到2024年1月1日"
+          },
+          "result": {
+            "success": false,
+            "error_code": 400,
+            "message": "Parameter validation failed with 4 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n  2. Missing required field '定投金额（investmentAmount）'. Please include 'investmentAmount' in your request.\n  3. Missing required field '定投触发时间（triggerSchedule）'. Please include 'triggerSchedule' in your request.\n  4. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters."
+          }
+        },
+        {
+          "step": 6,
+          "tool": "fixed_investment_backtest_service",
+          "params": {
+            "query": "定投回测需求：\n证券列表（securities）：SPY，权重100%\n定投金额（investmentAmount）：500美元  \n定投触发时间（triggerSchedule）：每周1次，频率为weekly\n标的类型（targetFinanceTypeList）：ETF\n回测开始时间：2019-01-01\n回测结束时间：2024-01-01"
+          },
+          "result": {
+            "success": true,
+            "message": "定投交易模型回测完成",
+            "data": {
+              "backtest_results": {
+                "total_return": 0.156,
+                "sharpe_ratio": 1.05,
+                "max_drawdown": -0.08
+              },
+              "image_component": {
+                "image_id": "fixed_001"
+              }
+            }
+          }
+        }
+      ],
+      "final_response_length": 425,
+      "injection_log": [
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "call_number": 1,
+          "phase": "inject",
+          "rule_key": "fixed_missing_triggerSchedule",
+          "field_path": "arg0.triggerSchedule",
+          "error_message": "Missing required field 'triggerSchedule'. Please include triggerSchedule with 'every' and 'frequency'."
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "call_number": 2,
+          "phase": "validate",
+          "passed": false,
+          "forced_pass": false,
+          "failed_fields": [
+            "arg0.securities"
+          ],
+          "error_message": "Parameter validation failed with 1 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+          "checks": [
+            {
+              "field": "arg0.securities",
+              "valid": false
+            },
+            {
+              "field": "arg0.investmentAmount",
+              "valid": true
+            },
+            {
+              "field": "arg0.triggerSchedule",
+              "valid": true
+            },
+            {
+              "field": "arg0.targetFinanceTypeList",
+              "valid": true
+            }
+          ]
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "call_number": 3,
+          "phase": "validate",
+          "passed": false,
+          "forced_pass": false,
+          "failed_fields": [
+            "arg0.securities",
+            "arg0.investmentAmount",
+            "arg0.triggerSchedule",
+            "arg0.targetFinanceTypeList"
+          ],
+          "error_message": "Parameter validation failed with 4 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n  2. Missing required field '定投金额（investmentAmount）'. Please include 'investmentAmount' in your request.\n  3. Missing required field '定投触发时间（triggerSchedule）'. Please include 'triggerSchedule' in your request.\n  4. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+          "checks": [
+            {
+              "field": "arg0.securities",
+              "valid": false
+            },
+            {
+              "field": "arg0.investmentAmount",
+              "valid": false
+            },
+            {
+              "field": "arg0.triggerSchedule",
+              "valid": false
+            },
+            {
+              "field": "arg0.targetFinanceTypeList",
+              "valid": false
+            }
+          ]
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "call_number": 4,
+          "phase": "validate",
+          "passed": false,
+          "forced_pass": false,
+          "failed_fields": [
+            "arg0.securities",
+            "arg0.investmentAmount",
+            "arg0.triggerSchedule",
+            "arg0.targetFinanceTypeList"
+          ],
+          "error_message": "Parameter validation failed with 4 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n  2. Missing required field '定投金额（investmentAmount）'. Please include 'investmentAmount' in your request.\n  3. Missing required field '定投触发时间（triggerSchedule）'. Please include 'triggerSchedule' in your request.\n  4. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+          "checks": [
+            {
+              "field": "arg0.securities",
+              "valid": false
+            },
+            {
+              "field": "arg0.investmentAmount",
+              "valid": false
+            },
+            {
+              "field": "arg0.triggerSchedule",
+              "valid": false
+            },
+            {
+              "field": "arg0.targetFinanceTypeList",
+              "valid": false
+            }
+          ]
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "call_number": 5,
+          "phase": "validate",
+          "passed": false,
+          "forced_pass": true,
+          "reason": "exceeded max retries (3), forced pass",
+          "failed_fields": []
+        }
+      ],
+      "executor_log": [
+        {
+          "tool_name": "stock_mapping",
+          "original_params": "{\"query\": \"SPY\"}",
+          "actual_params": "{\"query\": \"SPY\"}",
+          "result_success": true,
+          "phase": "passthrough",
+          "blocked": false
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "original_params": "{\"query\": \"定投回测参数\", \"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"triggerSchedule\": {\"every\": 1, \"frequency\": \"weekly\"}, \"backtestParams\": {\"commissionType\": \"percent\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "actual_params": "{\"query\": \"定投回测参数\", \"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"backtestParams\": {\"commissionType\": \"percent\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "result_success": false,
+          "phase": "inject",
+          "blocked": true
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "original_params": "{\"query\": \"定投回测参数\", \"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"triggerSchedule\": {\"every\": 1, \"frequency\": \"weekly\"}, \"backtestParams\": {\"commissionType\": \"percent\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "actual_params": "{\"query\": \"定投回测参数\", \"arg0\": {\"stockPoolScales\": [{\"securityCode\": \"SPY\", \"weight\": 1.0}], \"targetFinanceTypeList\": [\"ETF\"], \"investmentAmount\": 500, \"triggerSchedule\": {\"every\": 1, \"frequency\": \"weekly\"}, \"backtestParams\": {\"commissionType\": \"percent\", \"startDate\": \"2019-01-01\", \"endDate\": \"2024-01-01\"}}}",
+          "result_success": false,
+          "phase": "validate",
+          "blocked": true
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "original_params": "{\"query\": \"每周定投SPY 500美元，从2019年1月开始到2024年1月结束，共5年时间。请使用ETF作为资产类型，每周投资频率。\"}",
+          "actual_params": "{\"query\": \"每周定投SPY 500美元，从2019年1月开始到2024年1月结束，共5年时间。请使用ETF作为资产类型，每周投资频率。\"}",
+          "result_success": false,
+          "phase": "validate",
+          "blocked": true
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "original_params": "{\"query\": \"定投策略回测：证券列表为SPY（权重100%），定投金额500美元，每周定投（频率weekly，间隔1），标的类型为ETF，回测时间从2019年1月1日到2024年1月1日\"}",
+          "actual_params": "{\"query\": \"定投策略回测：证券列表为SPY（权重100%），定投金额500美元，每周定投（频率weekly，间隔1），标的类型为ETF，回测时间从2019年1月1日到2024年1月1日\"}",
+          "result_success": false,
+          "phase": "validate",
+          "blocked": true
+        },
+        {
+          "tool_name": "fixed_investment_backtest_service",
+          "original_params": "{\"query\": \"定投回测需求：\\n证券列表（securities）：SPY，权重100%\\n定投金额（investmentAmount）：500美元  \\n定投触发时间（triggerSchedule）：每周1次，频率为weekly\\n标的类型（targetFinanceTypeList）：ETF\\n回测开始时间：2019-01-01\\n回测结束时间：2024-01-01\"}",
+          "actual_params": "{\"query\": \"定投回测需求：\\n证券列表（securities）：SPY，权重100%\\n定投金额（investmentAmount）：500美元  \\n定投触发时间（triggerSchedule）：每周1次，频率为weekly\\n标的类型（targetFinanceTypeList）：ETF\\n回测开始时间：2019-01-01\\n回测结束时间：2024-01-01\"}",
+          "result_success": true,
+          "phase": "validate",
+          "blocked": false
+        }
+      ],
+      "validation_summary": {
+        "total_injections": 1,
+        "total_validations": 4,
+        "validated_true": 0,
+        "validated_false": 4,
+        "forced_pass": 1,
+        "details": [
+          {
+            "tool_name": "fixed_investment_backtest_service",
+            "call_number": 2,
+            "phase": "validate",
+            "passed": false,
+            "forced_pass": false,
+            "failed_fields": [
+              "arg0.securities"
+            ],
+            "error_message": "Parameter validation failed with 1 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+            "checks": [
+              {
+                "field": "arg0.securities",
+                "valid": false
+              },
+              {
+                "field": "arg0.investmentAmount",
+                "valid": true
+              },
+              {
+                "field": "arg0.triggerSchedule",
+                "valid": true
+              },
+              {
+                "field": "arg0.targetFinanceTypeList",
+                "valid": true
+              }
+            ]
+          },
+          {
+            "tool_name": "fixed_investment_backtest_service",
+            "call_number": 3,
+            "phase": "validate",
+            "passed": false,
+            "forced_pass": false,
+            "failed_fields": [
+              "arg0.securities",
+              "arg0.investmentAmount",
+              "arg0.triggerSchedule",
+              "arg0.targetFinanceTypeList"
+            ],
+            "error_message": "Parameter validation failed with 4 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n  2. Missing required field '定投金额（investmentAmount）'. Please include 'investmentAmount' in your request.\n  3. Missing required field '定投触发时间（triggerSchedule）'. Please include 'triggerSchedule' in your request.\n  4. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+            "checks": [
+              {
+                "field": "arg0.securities",
+                "valid": false
+              },
+              {
+                "field": "arg0.investmentAmount",
+                "valid": false
+              },
+              {
+                "field": "arg0.triggerSchedule",
+                "valid": false
+              },
+              {
+                "field": "arg0.targetFinanceTypeList",
+                "valid": false
+              }
+            ]
+          },
+          {
+            "tool_name": "fixed_investment_backtest_service",
+            "call_number": 4,
+            "phase": "validate",
+            "passed": false,
+            "forced_pass": false,
+            "failed_fields": [
+              "arg0.securities",
+              "arg0.investmentAmount",
+              "arg0.triggerSchedule",
+              "arg0.targetFinanceTypeList"
+            ],
+            "error_message": "Parameter validation failed with 4 error(s):\n  1. Missing required field '证券列表（securities）'. Please include 'securities' in your request.\n  2. Missing required field '定投金额（investmentAmount）'. Please include 'investmentAmount' in your request.\n  3. Missing required field '定投触发时间（triggerSchedule）'. Please include 'triggerSchedule' in your request.\n  4. Missing required field '标的类型（targetFinanceTypeList）'. Please include 'targetFinanceTypeList' in your request.\n\nPlease fix ALL the above errors and call the tool again with complete parameters.",
+            "checks": [
+              {
+                "field": "arg0.securities",
+                "valid": false
+              },
+              {
+                "field": "arg0.investmentAmount",
+                "valid": false
+              },
+              {
+                "field": "arg0.triggerSchedule",
+                "valid": false
+              },
+              {
+                "field": "arg0.targetFinanceTypeList",
+                "valid": false
+              }
+            ]
+          },
+          {
+            "tool_name": "fixed_investment_backtest_service",
+            "call_number": 5,
+            "phase": "validate",
+            "passed": false,
+            "forced_pass": true,
+            "reason": "exceeded max retries (3), forced pass",
+            "failed_fields": []
+          }
+        ]
+      }
+    }
+  ]
+}
